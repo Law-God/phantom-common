@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		">
+		
+	<!-- 开启Spring自动扫描 -->
+	<context:component-scan base-package="com.phantom.common" />
+		
+	<!-- 加载配置文件 -->
+	<!-- 数据源配置文件 -->
+	<context:property-placeholder location="classpath:database.properties" />
+	
+	<!-- 数据源，使用dbcp -->
+	<!-- name别名测试用,不能与id值一样 -->
+	<bean id="dataSource" name="dataSourceAlias" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url">
+			<value><![CDATA[${jdbc.url}]]></value>
+		</property>
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="validationQuery">
+			<value>SELECT 1 FROM dual</value>
+		</property>
+
+		<!-- Connection Pooling Info -->
+		<property name="maxActive" value="30" />
+		<property name="maxIdle" value="3" />
+		<property name="initialSize" value="3" />
+		<property name="defaultAutoCommit" value="true" />
+		<!-- 连接Idle一个小时后超时 -->
+		<property name="timeBetweenEvictionRunsMillis" value="3600000" />
+		<property name="minEvictableIdleTimeMillis" value="3600000" />
+	</bean>
+
+	<!-- JDBC 模板  -->
+	<bean id="jdbcTemplate"
+		  class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+</beans>
